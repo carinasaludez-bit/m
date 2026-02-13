@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Message Just For You</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: 'Georgia', serif;
+    scroll-behavior:smooth;
+}
+
+body{
+    background: linear-gradient(180deg,#7b1e1e,#a83232,#5a0f0f);
+    color:white;
+    overflow:hidden;
+}
+
+section{
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:40px;
+}
+
+/* INTRO */
+.intro h1{
+    font-size:70px;
+    letter-spacing:5px;
+}
+
+/* LETTER */
+.letter{
+    max-width:700px;
+    font-size:20px;
+    line-height:1.6;
+    min-height:200px;
+}
+
+/* HEART */
+.heart{
+    font-size:70px;
+    animation: beat 1s infinite;
+    margin:20px 0;
+}
+
+@keyframes beat{
+    0%,100%{transform:scale(1);}
+    50%{transform:scale(1.2);}
+}
+
+/* BUTTONS */
+.buttons{
+    margin-top:30px;
+    position:relative;
+}
+
+button{
+    padding:15px 35px;
+    margin:10px;
+    font-size:18px;
+    border:none;
+    border-radius:30px;
+    cursor:pointer;
+}
+
+.yes{
+    background:#ff4d6d;
+    color:white;
+}
+
+.no{
+    background:#333;
+    color:white;
+    position:absolute;
+}
+
+/* YES PAGE */
+.yes-page{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:radial-gradient(circle,#a83232,#3d0a0a);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    visibility:hidden;
+    opacity:0;
+    transition:1s;
+}
+
+.yes-page.active{
+    visibility:visible;
+    opacity:1;
+}
+
+.yes-page h1{
+    font-size:60px;
+}
+
+/* Canvas for confetti */
+canvas{
+    position:fixed;
+    top:0;
+    left:0;
+    pointer-events:none;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="confetti"></canvas>
+
+<section class="intro">
+    <p>A message, just for you</p>
+    <h1>EMANUELE</h1>
+</section>
+
+<section>
+    <div class="letter" id="typedText"></div>
+
+    <div class="heart">❤️</div>
+
+    <h2>Will you be my Valentine?</h2>
+
+    <div class="buttons">
+        <button class="yes" onclick="sayYes()">YES 💕</button>
+        <button class="no" id="noBtn">NO 😢</button>
+    </div>
+</section>
+
+<div class="yes-page" id="yesPage">
+    <h1>SHE SAID YES! 🎉</h1>
+    <p>You made this the best Valentine's Day ever 💖</p>
+</div>
+
+<script>
+
+/* 💌 TYPING EFFECT */
+const text = `My dearest Em,
+
+There are things in this world that are difficult to say out loud —
+not because they aren't true, but because they are deeply felt.
+
+You are my favorite notification,
+my best decision,
+and the love I prayed for.
+
+And today I just want to ask...
+
+Will you be mine? 💖`;
+
+let i = 0;
+function typeWriter(){
+    if(i < text.length){
+        document.getElementById("typedText").innerHTML += text.charAt(i) === "\n" ? "<br>" : text.charAt(i);
+        i++;
+        setTimeout(typeWriter, 35);
+    }
+}
+typeWriter();
+
+/* 😈 NO BUTTON RUNS */
+const noBtn = document.getElementById("noBtn");
+noBtn.addEventListener("mouseover", ()=>{
+    const x = Math.random()*300 - 150;
+    const y = Math.random()*200 - 100;
+    noBtn.style.transform = translate(${x}px,${y}px);
+});
+
+/* 🎇 CONFETTI SYSTEM */
+const canvas = document.getElementById("confetti");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+
+function createConfetti(){
+    for(let i=0;i<150;i++){
+        particles.push({
+            x: Math.random()*canvas.width,
+            y: Math.random()*canvas.height - canvas.height,
+            r: Math.random()*6+4,
+            d: Math.random()*50,
+            color: hsl(${Math.random()*360},100%,50%),
+            tilt: Math.random()*10-10
+        });
+    }
+}
+
+function drawConfetti(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p=>{
+        ctx.beginPath();
+        ctx.lineWidth = p.r;
+        ctx.strokeStyle = p.color;
+        ctx.moveTo(p.x + p.tilt, p.y);
+        ctx.lineTo(p.x, p.y + p.tilt + p.r);
+        ctx.stroke();
+    });
+    updateConfetti();
+}
+
+function updateConfetti(){
+    particles.forEach(p=>{
+        p.y += 3;
+        if(p.y > canvas.height){
+            p.y = -10;
+        }
+    });
+}
+
+function sayYes(){
+    document.getElementById("yesPage").classList.add("active");
+    createConfetti();
+    setInterval(drawConfetti, 20);
+}
+
+</script>
+
+</body>
+</html>
